@@ -123,6 +123,14 @@
         .modal-overlay.active .feedback-card {
             transform: scale(1);
         }
+       @keyframes time-low-pulse {
+           0%, 100% { transform: scale(1) rotate(2deg); }
+           50% { transform: scale(1.1) rotate(2deg); }
+       }
+       .time-low {
+           animation: time-low-pulse 1s infinite;
+           background-color: #ef4444 !important; /* red-500 */
+       }
     </style>
 </head>
 <body class="h-screen w-full flex flex-col">
@@ -143,23 +151,66 @@
             <div class="bg-white/50 px-6 py-2 rounded-full backdrop-blur-sm">
                 <p class="text-xl text-indigo-600 font-bold">بازی کن و یاد بگیر! 🎓</p>
             </div>
+            <div class="flex gap-2 mt-4">
+                <div class="bg-yellow-300/70 px-3 py-1 rounded-full backdrop-blur-sm shadow">
+                    <p class="text-md text-yellow-800 font-bold">🏆 کلاس اول: <span id="high-score-basic">0</span></p>
+                </div>
+                <div class="bg-red-300/70 px-3 py-1 rounded-full backdrop-blur-sm shadow">
+                    <p class="text-md text-red-800 font-bold">🚀 پیشرفته: <span id="high-score-advanced">0</span></p>
+                </div>
+            </div>
         </div>
 
-        <div class="w-full max-w-sm space-y-4">
-            <button onclick="startGame('add')" class="btn-game w-full bg-green-400 hover:bg-green-500 border-b-4 border-green-600 text-white text-3xl font-bold py-6 rounded-3xl flex items-center justify-center gap-4">
-                <span>🍎</span> جمع (به‌اضافه)
-            </button>
-            <button onclick="startGame('subtract')" class="btn-game w-full bg-orange-400 hover:bg-orange-500 border-b-4 border-orange-600 text-white text-3xl font-bold py-6 rounded-3xl flex items-center justify-center gap-4">
-                <span>🍌</span> تفریق (منها)
-            </button>
-        </div>
-    </div>
+        <div class="w-full max-w-sm space-y-5">
+            <!-- سطح اول -->
+            <div>
+                <h2 class="text-xl font-bold text-center text-indigo-500 mb-2">کلاس اول</h2>
+                <div class="space-y-3">
+                    <button onclick="startGame('add')" class="btn-game w-full bg-green-400 hover:bg-green-500 border-b-4 border-green-600 text-white text-2xl font-bold py-4 rounded-2xl flex items-center justify-center gap-3">
+                        <span>🍎</span> جمع
+                    </button>
+                    <button onclick="startGame('subtract')" class="btn-game w-full bg-orange-400 hover:bg-orange-500 border-b-4 border-orange-600 text-white text-2xl font-bold py-4 rounded-2xl flex items-center justify-center gap-3">
+                        <span>🍌</span> تفریق
+                    </button>
+                   <button onclick="startChallenge('basic')" class="btn-game w-full bg-rose-400 hover:bg-rose-500 border-b-4 border-rose-600 text-white text-2xl font-bold py-4 rounded-2xl flex items-center justify-center gap-3">
+                       <span>⏱️</span> چالشی (کلاس اول)
+                   </button>
+                </div>
+            </div>
+
+            <!-- سطح پیشرفته -->
+            <div>
+                <h2 class="text-xl font-bold text-center text-indigo-500 mb-2">فراتر از کلاس اول 🚀</h2>
+                <div class="space-y-3">
+                    <button onclick="startGame('multiply')" class="btn-game w-full bg-purple-400 hover:bg-purple-500 border-b-4 border-purple-600 text-white text-2xl font-bold py-4 rounded-2xl flex items-center justify-center gap-3">
+                        <span>✖️</span> ضرب
+                    </button>
+                    <button onclick="startGame('divide')" class="btn-game w-full bg-sky-400 hover:bg-sky-500 border-b-4 border-sky-600 text-white text-2xl font-bold py-4 rounded-2xl flex items-center justify-center gap-3">
+                        <span>➗</span> تقسیم
+                    </button>
+                </div>
+            </div>
+            
+            <!-- حالت چالشی -->
+            <div>
+                 <button onclick="startChallenge('advanced')" class="btn-game w-full bg-red-500 hover:bg-red-600 border-b-4 border-red-700 text-white text-2xl font-bold py-4 rounded-2xl flex items-center justify-center gap-3 animate-pulse-slow">
+                    <span>🚀</span> چالشی (پیشرفته)
+                </button>
+            </div>
+       </div>
+       <p class="text-sm text-gray-400 mt-8 absolute bottom-6">ایده و تولید: احسان شمسی</p>
+   </div>
 
     <!-- صفحه بازی (نسخه ۲) -->
     <div id="game-screen" class="hidden w-full h-full flex flex-col bg-gradient-to-b from-blue-50 to-purple-50">
         
         <div class="flex justify-between items-center p-4">
             <button onclick="showHome()" class="bg-white p-3 rounded-2xl shadow-sm text-2xl hover:bg-gray-50">🏠</button>
+           
+            <div id="timer-display" class="hidden bg-red-500 px-6 py-2 rounded-full shadow-lg border-4 border-white transform rotate-2">
+               <span class="text-2xl font-black text-white">⏱️ <span id="time-left">60</span></span>
+           </div>
+
             <div class="bg-yellow-400 px-6 py-2 rounded-full shadow-lg border-4 border-white transform -rotate-2">
                 <span class="text-2xl font-black text-yellow-900">امتیاز: <span id="score">0</span></span>
             </div>
@@ -218,15 +269,49 @@
 
         // --- متغیرهای بازی ---
         let score = 0;
-        let currentMode = 'add'; 
+        let highScoreBasic = 0;
+        let highScoreAdvanced = 0;
+        let currentMode = 'add';
         let correctAnswer = 0;
         let isLocked = false;
+        let wrongAttempts = 0;
+        let isChallengeMode = false;
+        let challengeType = 'advanced'; // 'basic' or 'advanced'
+        let timerInterval = null;
+        let timeLeft = 60;
 
         const icons = ['🍎', '🍐', '🍓', '🍄', '🐼', '🦁', '🚗', '🎈', '⚽', '⭐'];
 
         // --- توابع اصلی ---
 
+        function loadHighScore() {
+            highScoreBasic = parseInt(localStorage.getItem('mathGardenHighScoreBasic') || 0);
+            highScoreAdvanced = parseInt(localStorage.getItem('mathGardenHighScoreAdvanced') || 0);
+            document.getElementById('high-score-basic').innerText = highScoreBasic.toLocaleString('fa-IR');
+            document.getElementById('high-score-advanced').innerText = highScoreAdvanced.toLocaleString('fa-IR');
+        }
+
+        function saveHighScore() {
+            const isBasicMode = ['add', 'subtract'].includes(currentMode) || (isChallengeMode && challengeType === 'basic');
+            
+            if (isBasicMode) {
+                if (score > highScoreBasic) {
+                    highScoreBasic = score;
+                    localStorage.setItem('mathGardenHighScoreBasic', highScoreBasic);
+                    document.getElementById('high-score-basic').innerText = highScoreBasic.toLocaleString('fa-IR');
+                }
+            } else {
+                if (score > highScoreAdvanced) {
+                    highScoreAdvanced = score;
+                    localStorage.setItem('mathGardenHighScoreAdvanced', highScoreAdvanced);
+                    document.getElementById('high-score-advanced').innerText = highScoreAdvanced.toLocaleString('fa-IR');
+                }
+            }
+        }
+
         function startGame(mode) {
+            isChallengeMode = false;
+            document.getElementById('timer-display').classList.add('hidden');
             currentMode = mode;
             score = 0;
             document.getElementById('score').innerText = score.toLocaleString('fa-IR');
@@ -235,13 +320,36 @@
             generateLevel();
         }
 
+        function startChallenge(type) {
+           isChallengeMode = true;
+           challengeType = type;
+           score = 0;
+           document.getElementById('score').innerText = score.toLocaleString('fa-IR');
+           document.getElementById('home-screen').classList.add('hidden');
+           document.getElementById('game-screen').classList.remove('hidden');
+           
+           startTimer();
+           generateLevel();
+        }
+
         function showHome() {
+           stopTimer();
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('home-screen').classList.remove('hidden');
         }
 
         function generateLevel() {
+           if (isChallengeMode && timeLeft <= 0) return;
+
+           if (isChallengeMode) {
+               const modes = challengeType === 'basic'
+                   ? ['add', 'subtract']
+                   : ['add', 'subtract', 'multiply', 'divide'];
+               currentMode = modes[Math.floor(Math.random() * modes.length)];
+           }
+
             isLocked = false;
+            wrongAttempts = 0; // ریست کردن شمارنده خطا
             closeFeedback(); // بستن مودال اگر باز است
             
             const visualContainer = document.getElementById('visual-container');
@@ -289,7 +397,7 @@
 
                 visualContainer.appendChild(bigContainer);
 
-            } else {
+            } else if (currentMode === 'subtract') {
                 n1 = Math.floor(Math.random() * 8) + 2;
                 n2 = Math.floor(Math.random() * (n1 - 1)) + 1;
                 correctAnswer = n1 - n2;
@@ -297,7 +405,6 @@
                 document.getElementById('math-op').innerText = '-';
                 hintText.innerText = "چند تا شکل سالم مونده؟ 👇";
 
-                // --- همان ظاهر نسخه ۲ ---
                 const subtractContainer = document.createElement('div');
                 subtractContainer.className = "flex flex-wrap justify-center gap-2 p-4 bg-orange-50 rounded-2xl border-2 border-orange-200 w-full";
 
@@ -305,7 +412,7 @@
                     const span = createIcon(icon, i * 0.1);
                     if (i >= (n1 - n2)) {
                         span.classList.add('crossed-out');
-                        span.style.animationDelay = '0s'; 
+                        span.style.animationDelay = '0s';
                         setTimeout(() => {
                              span.style.opacity = "0.5";
                              span.style.transform = "scale(0.9)";
@@ -314,7 +421,53 @@
                     subtractContainer.appendChild(span);
                 }
                 visualContainer.appendChild(subtractContainer);
-            }
+           } else if (currentMode === 'multiply') {
+               n1 = Math.floor(Math.random() * 4) + 2; // اعداد بین ۲ تا ۵
+               n2 = Math.floor(Math.random() * 4) + 2; // اعداد بین ۲ تا ۵
+               correctAnswer = n1 * n2;
+
+               document.getElementById('math-op').innerText = '×';
+               hintText.innerText = `چند تا دسته ${n2.toLocaleString('fa-IR')} تایی داریم؟ 👇`;
+
+               const multiplyContainer = document.createElement('div');
+               multiplyContainer.className = "flex flex-wrap justify-center items-center gap-2 p-2 w-full";
+
+               for(let i=0; i<n1; i++) {
+                   const group = document.createElement('div');
+                   group.className = "flex flex-wrap justify-center gap-1 p-2 border-2 border-purple-200 rounded-xl bg-purple-50 animate-pop";
+                   group.style.animationDelay = (i * 0.15) + 's';
+                   for(let j=0; j<n2; j++) {
+                       const iconElement = createIcon(icon, 0);
+                       iconElement.style.fontSize = '2.2rem';
+                       iconElement.style.width = '2.8rem';
+                       iconElement.style.height = '2.8rem';
+                       group.appendChild(iconElement);
+                   }
+                   multiplyContainer.appendChild(group);
+               }
+               visualContainer.appendChild(multiplyContainer);
+
+           } else if (currentMode === 'divide') {
+               const temp_n2 = Math.floor(Math.random() * 4) + 2; // اعداد بین ۲ تا ۴
+               correctAnswer = Math.floor(Math.random() * 3) + 2; // اعداد بین ۲ تا ۴
+               n1 = temp_n2 * correctAnswer;
+               n2 = temp_n2;
+
+               document.getElementById('math-op').innerText = '÷';
+               hintText.innerText = `اگه اینا رو به دسته‌های ${n2.toLocaleString('fa-IR')} تایی تقسیم کنیم، چند تا دسته میشه؟`;
+
+               const divideContainer = document.createElement('div');
+               divideContainer.id = "divide-container"; // به کانتینر آیدی می‌دهیم
+               divideContainer.className = "flex flex-wrap justify-center items-center gap-2 p-2 w-full";
+               
+               // نمایش اولیه همه آیکون‌ها بدون گروه‌بندی
+               for(let i=0; i<n1; i++) {
+                   const iconElement = createIcon(icon, i * 0.05);
+                   iconElement.classList.add('division-icon'); // یک کلاس برای شناسایی اضافه می‌کنیم
+                   divideContainer.appendChild(iconElement);
+               }
+               visualContainer.appendChild(divideContainer);
+           }
 
             document.getElementById('math-n1').innerText = n1.toLocaleString('fa-IR');
             document.getElementById('math-n2').innerText = n2.toLocaleString('fa-IR');
@@ -352,27 +505,51 @@
         // --- منطق جدید بررسی جواب + مودال ---
         function checkAnswer(selected, btn) {
             if(isLocked) return;
-            isLocked = true;
 
             if(selected === correctAnswer) {
-                // درست
-                score++;
-                document.getElementById('score').innerText = score.toLocaleString('fa-IR');
-                playSound('correct');
-                triggerConfetti();
-                showFeedback(true);
+                isLocked = true; // قفل کردن دکمه‌ها
+                
+                if (currentMode === 'divide' && !isChallengeMode) {
+                    // اجرای انیمیشن تقسیم و سپس نمایش فیدبک
+                    animateDivisionGrouping(() => {
+                        score++;
+                        document.getElementById('score').innerText = score.toLocaleString('fa-IR');
+                        saveHighScore();
+                        playSound('correct');
+                        triggerConfetti();
+                        showFeedback(true);
+                    });
+                } else {
+                    // رفتار عادی برای سایر حالت‌ها
+                    score++;
+                    document.getElementById('score').innerText = score.toLocaleString('fa-IR');
+                    playSound('correct');
+                    if (isChallengeMode) {
+                        generateLevel();
+                    } else {
+                        saveHighScore();
+                        triggerConfetti();
+                        showFeedback(true);
+                    }
+                }
             } else {
-                // غلط
                 playSound('wrong');
-                // لرزش دکمه
+                if (isChallengeMode) {
+                    timeLeft = Math.max(0, timeLeft - 2); // جریمه ۲ ثانیه
+                    document.getElementById('time-left').innerText = timeLeft;
+                }
                 btn.classList.add('bg-red-100', 'border-red-300');
                 setTimeout(() => btn.classList.remove('bg-red-100', 'border-red-300'), 500);
-                showFeedback(false);
+                
+                if (!isChallengeMode) {
+                   wrongAttempts++;
+                   showFeedback(false, wrongAttempts >= 2);
+                }
             }
         }
 
         // --- نمایش مودال (پاپ‌آپ) ---
-        function showFeedback(isSuccess) {
+        function showFeedback(isSuccess, showAnswer = false) {
             const modal = document.getElementById('feedback-modal');
             const card = document.getElementById('feedback-card-inner');
             
@@ -390,20 +567,70 @@
                 `;
                 card.style.borderColor = "#86efac"; // سبز روشن
             } else {
-                // ظاهر پیام شکست
-                card.innerHTML = `
-                    <div class="text-6xl mb-2 animate-pulse">🤔</div>
-                    <h2 class="text-3xl font-black text-orange-500 mb-1">دقت کن!</h2>
-                    <p class="text-gray-500 font-bold mb-4">یه بار دیگه تلاش کن</p>
-                    <button onclick="retryLevel()" class="w-full bg-orange-400 text-white text-xl font-bold py-3 rounded-xl shadow-lg hover:bg-orange-500 transition">
-                        تلاش دوباره ↺
-                    </button>
-                `;
-                card.style.borderColor = "#fdba74"; // نارنجی روشن
-            }
-        }
+               if (showAnswer) {
+                   // ظاهر پیام شکست همراه با نمایش جواب
+                   card.innerHTML = `
+                       <div class="text-6xl mb-2">💡</div>
+                       <h2 class="text-3xl font-black text-sky-500 mb-1">اشکالی نداره!</h2>
+                       <p class="text-gray-500 font-bold mb-4">جواب درست <span class="text-2xl text-sky-600">${correctAnswer.toLocaleString('fa-IR')}</span> بود.</p>
+                       <button onclick="generateLevel()" class="w-full bg-sky-500 text-white text-xl font-bold py-3 rounded-xl shadow-lg hover:bg-sky-600 transition">
+                           یاد گرفتم، بعدی!
+                       </button>
+                   `;
+                   card.style.borderColor = "#38bdf8"; // آبی روشن
+               } else {
+                   // ظاهر پیام شکست عادی
+                   card.innerHTML = `
+                       <div class="text-6xl mb-2 animate-pulse">🤔</div>
+                       <h2 class="text-3xl font-black text-orange-500 mb-1">دقت کن!</h2>
+                       <p class="text-gray-500 font-bold mb-4">یه بار دیگه تلاش کن</p>
+                       <button onclick="retryLevel()" class="w-full bg-orange-400 text-white text-xl font-bold py-3 rounded-xl shadow-lg hover:bg-orange-500 transition">
+                           تلاش دوباره ↺
+                       </button>
+                   `;
+                   card.style.borderColor = "#fdba74"; // نارنجی روشن
+               }
+           }
+       }
 
-        function closeFeedback() {
+      function animateDivisionGrouping(callback) {
+          const container = document.getElementById('divide-container');
+          const icons = Array.from(container.getElementsByClassName('division-icon'));
+          const n2 = icons.length / correctAnswer; // تعداد آیتم در هر گروه
+
+          container.innerHTML = ''; // پاک کردن کانتینر
+          container.style.gap = '0.75rem'; // تنظیم فاصله بین گروه‌ها
+
+          for (let i = 0; i < correctAnswer; i++) {
+              const group = document.createElement('div');
+              group.className = "flex flex-wrap justify-center gap-1 p-2 border-4 border-dashed border-sky-300 rounded-2xl bg-sky-50";
+              group.style.transform = 'scale(0)';
+              group.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+              container.appendChild(group);
+
+              // انیمیشن ظاهر شدن گروه با تاخیر
+              setTimeout(() => {
+                  group.style.transform = 'scale(1)';
+              }, i * 200);
+
+              // انتقال آیکون‌ها به گروه جدید
+              for (let j = 0; j < n2; j++) {
+                  const iconIndex = i * n2 + j;
+                  if (icons[iconIndex]) {
+                      const iconElement = icons[iconIndex];
+                      iconElement.style.fontSize = '2.2rem';
+                      iconElement.style.width = '2.8rem';
+                      iconElement.style.height = '2.8rem';
+                      group.appendChild(iconElement);
+                  }
+              }
+          }
+          
+          // اجرای تابع callback پس از اتمام انیمیشن
+          setTimeout(callback, correctAnswer * 200 + 500);
+      }
+
+       function closeFeedback() {
             document.getElementById('feedback-modal').classList.remove('active');
         }
 
@@ -411,6 +638,52 @@
             isLocked = false;
             closeFeedback();
         }
+
+       // --- توابع جدید برای حالت چالشی ---
+       function startTimer() {
+           timeLeft = 60;
+           const timerEl = document.getElementById('timer-display');
+           document.getElementById('time-left').innerText = timeLeft;
+           timerEl.classList.remove('hidden', 'time-low');
+           timerEl.style.backgroundColor = '#3b82f6'; // blue-500
+
+           timerInterval = setInterval(() => {
+               timeLeft--;
+               document.getElementById('time-left').innerText = timeLeft;
+               if (timeLeft <= 10 && !timerEl.classList.contains('time-low')) {
+                   timerEl.classList.add('time-low');
+               }
+               if (timeLeft <= 0) {
+                   endChallenge();
+               }
+           }, 1000);
+       }
+
+       function stopTimer() {
+           clearInterval(timerInterval);
+           timerInterval = null;
+       }
+
+       function endChallenge() {
+           stopTimer();
+           isLocked = true;
+           saveHighScore();
+           
+           const modal = document.getElementById('feedback-modal');
+           const card = document.getElementById('feedback-card-inner');
+           
+           modal.classList.add('active');
+           card.style.borderColor = "#60a5fa"; // blue-400
+
+           card.innerHTML = `
+               <div class="text-6xl mb-2">🎉</div>
+               <h2 class="text-3xl font-black text-blue-500 mb-1">وقت تموم شد!</h2>
+               <p class="text-gray-500 font-bold mb-4">امتیاز نهایی شما: <span class="text-2xl text-blue-600">${score.toLocaleString('fa-IR')}</span></p>
+               <button onclick="showHome(); closeFeedback();" class="w-full bg-blue-500 text-white text-xl font-bold py-3 rounded-xl shadow-lg hover:bg-blue-600 transition">
+                   بازگشت به منو 🏠
+               </button>
+           `;
+       }
 
         // --- سیستم کاغذ رنگی (بدون تغییر) ---
         const canvas = document.getElementById('confetti-canvas');
@@ -457,6 +730,12 @@
             particles = particles.filter(p => p.life > 0);
             requestAnimationFrame(animateConfetti);
         }
+
+       // --- بارگذاری اولیه ---
+       document.addEventListener('DOMContentLoaded', () => {
+           loadHighScore();
+       });
+
     </script>
 </body>
 </html>
