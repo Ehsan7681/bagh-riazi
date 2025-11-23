@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>باغ ریاضی - نسخه استیکر پیشرفته</title>
+    <title>باغ ریاضی - نسخه نهایی با سطوح</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <style>
@@ -15,7 +15,7 @@
             user-select: none;
         }
 
-        /* --- انیمیشن‌های عمومی --- */
+        /* --- انیمیشن‌ها --- */
         @keyframes pulse-scale {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
@@ -34,7 +34,7 @@
         .animate-pulse-slow { animation: pulse-scale 2s infinite ease-in-out; }
         .animate-float { animation: float 3s infinite ease-in-out; }
 
-        /* --- استایل دکمه‌های بازی --- */
+        /* --- استایل‌ها --- */
         .btn-game {
             transition: transform 0.1s, box-shadow 0.1s;
             box-shadow: 0 6px 0 rgba(0,0,0,0.15);
@@ -44,155 +44,116 @@
             box-shadow: 0 2px 0 rgba(0,0,0,0.15);
         }
 
-        /* --- استایل‌های بصری ریاضی --- */
         .crossed-out {
-            opacity: 0.5;
-            position: relative;
-            filter: grayscale(100%);
+            opacity: 0.5; position: relative; filter: grayscale(100%);
         }
         .crossed-out::after {
-            content: '❌';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 120%;
-            color: red;
-            text-shadow: 2px 2px 0px white;
+            content: '❌'; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); font-size: 120%; color: red; text-shadow: 2px 2px 0px white;
         }
         .union-container {
-            border: 3px dashed #A78BFA;
-            background-color: rgba(255, 255, 255, 0.6);
-            border-radius: 24px;
-            position: relative;
+            border: 3px dashed #A78BFA; background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 24px; position: relative;
         }
         .union-label {
-            position: absolute;
-            bottom: -15px; left: 50%;
-            transform: translateX(-50%);
-            background: #A78BFA;
-            color: white;
-            padding: 2px 12px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
+            position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%);
+            background: #A78BFA; color: white; padding: 2px 12px; border-radius: 12px;
+            font-size: 0.8rem; font-weight: bold;
         }
         .item-icon {
-            font-size: 2.8rem;
-            display: flex; align-items: center; justify-content: center;
-            width: 3.5rem; height: 3.5rem;
+            font-size: 2.2rem; display: flex; align-items: center; justify-content: center;
+            width: 2.8rem; height: 2.8rem;
         }
 
-        /* --- استایل مودال‌ها --- */
+        /* --- مودال‌ها --- */
         .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            z-index: 100;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.3s;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
         .feedback-card {
-            background: white; width: 85%; max-width: 320px;
-            border-radius: 30px; padding: 20px; text-align: center;
-            transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 6px solid white;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            background: white; width: 90%; max-width: 340px; border-radius: 30px;
+            padding: 20px; text-align: center; transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 6px solid white; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         .modal-overlay.active .feedback-card { transform: scale(1); }
 
-        /* --- استایل‌های سیستم استیکر پیشرفته --- */
-        .sticker-card {
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative; overflow: hidden;
-        }
+        /* استیکرها */
+        .sticker-card { transition: all 0.3s; position: relative; overflow: hidden; }
         .sticker-card:active { transform: scale(0.95); }
-
-        /* حالت قفل */
-        .sticker-locked {
-            background: #e2e8f0; /* gray-200 */
-            filter: grayscale(100%);
-            opacity: 0.8;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
+        .sticker-locked { background: #e2e8f0; filter: grayscale(100%); opacity: 0.8; }
         .sticker-locked::after {
-            content: '🔒';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem; opacity: 0.5;
-        }
-
-        /* افکت درخشش برای استیکرهای کمیاب */
-        @keyframes shine {
-            0% { transform: translateX(-150%) skewX(-15deg); }
-            100% { transform: translateX(150%) skewX(-15deg); }
+            content: '🔒'; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); font-size: 2rem; opacity: 0.5;
         }
         .rare-shine::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transform: translateX(-150%) skewX(-15deg);
-            animation: shine 3s infinite;
+            transform: translateX(-150%) skewX(-15deg); animation: shine 3s infinite;
         }
+        @keyframes shine { 0% { transform: translateX(-150%) skewX(-15deg); } 100% { transform: translateX(150%) skewX(-15deg); } }
 
-        /* افکت باز شدن استیکر جدید */
+        /* افکت باز شدن استیکر */
         .sticker-unlock-modal {
-            position: fixed; inset: 0; z-index: 200;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px);
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.3s;
+            position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .sticker-unlock-modal.active { opacity: 1; pointer-events: auto; }
-        
         .rays {
             position: absolute; width: 600px; height: 600px;
             background: repeating-conic-gradient(from 0deg, rgba(255,255,255,0.1) 0deg 20deg, transparent 20deg 40deg);
-            animation: spin 10s linear infinite;
-            z-index: -1;
+            animation: spin 10s linear infinite; z-index: -1;
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* انیمیشن تایمر */
         @keyframes time-low-pulse {
            0%, 100% { transform: scale(1) rotate(2deg); }
            50% { transform: scale(1.1) rotate(2deg); }
         }
-        .time-low {
-           animation: time-low-pulse 1s infinite;
-           background-color: #ef4444 !important;
-        }
+        .time-low { animation: time-low-pulse 1s infinite; background-color: #ef4444 !important; }
     </style>
 </head>
 <body class="h-screen w-full flex flex-col">
 
     <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
 
-    <!-- مودال اختصاصی دریافت استیکر جدید -->
+    <!-- مودال انتخاب سطح سختی -->
+    <div id="difficulty-modal" class="modal-overlay">
+        <div class="feedback-card bg-gradient-to-br from-indigo-50 to-blue-50">
+            <h2 id="diff-modal-title" class="text-2xl font-black text-indigo-600 mb-4">انتخاب سطح</h2>
+            <div class="space-y-3">
+                <button onclick="selectDifficulty('easy')" class="w-full bg-white border-2 border-green-400 text-green-700 p-4 rounded-2xl shadow-sm hover:bg-green-50 transition flex items-center justify-between group">
+                    <span class="text-xl font-bold" id="diff-easy-text">ساده (زیر ۱۰)</span>
+                    <span class="text-2xl group-hover:scale-125 transition">🌱</span>
+                </button>
+                <button onclick="selectDifficulty('hard')" class="w-full bg-white border-2 border-orange-400 text-orange-700 p-4 rounded-2xl shadow-sm hover:bg-orange-50 transition flex items-center justify-between group">
+                    <span class="text-xl font-bold" id="diff-hard-text">پیشرفته (۱۰ تا ۲۰)</span>
+                    <span class="text-2xl group-hover:scale-125 transition">🌳</span>
+                </button>
+            </div>
+            <button onclick="closeDifficultyModal()" class="mt-4 text-gray-400 font-bold text-sm hover:text-gray-600">بازگشت</button>
+        </div>
+    </div>
+
+    <!-- مودال جایزه -->
     <div id="new-sticker-modal" class="sticker-unlock-modal">
         <div class="rays"></div>
         <div class="text-white text-3xl font-black mb-4 drop-shadow-md animate-bounce">جایزه جدید! 🎉</div>
         <div id="new-sticker-icon" class="text-9xl animate-pop mb-6 filter drop-shadow-2xl">🎁</div>
         <div class="bg-white p-6 rounded-3xl text-center max-w-xs shadow-2xl transform rotate-1 border-4 border-yellow-300">
             <h3 id="new-sticker-name" class="text-2xl font-black text-purple-600 mb-2">نام استیکر</h3>
-            <p id="new-sticker-desc" class="text-gray-500 font-bold">توضیحات استیکر</p>
+            <p id="new-sticker-desc" class="text-gray-500 font-bold">توضیحات</p>
         </div>
-        <button onclick="closeStickerModal()" class="mt-8 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-3 rounded-full text-xl font-black shadow-lg hover:scale-105 transition border-b-4 border-orange-600">
-            ایول! 😍
-        </button>
+        <button onclick="closeStickerModal()" class="mt-8 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-3 rounded-full text-xl font-black shadow-lg hover:scale-105 transition border-b-4 border-orange-600">ایول! 😍</button>
     </div>
 
-    <!-- مودال فیدبک بازی -->
+    <!-- مودال فیدبک -->
     <div id="feedback-modal" class="modal-overlay">
-        <div class="feedback-card" id="feedback-card-inner">
-            <!-- محتوا با JS پر می‌شود -->
-        </div>
+        <div class="feedback-card" id="feedback-card-inner"></div>
     </div>
 
     <!-- منوی اصلی -->
@@ -201,10 +162,6 @@
         
         <div class="text-center mb-6 animate-float">
             <h1 class="text-5xl font-black text-pink-500 drop-shadow-lg mb-4" style="-webkit-text-stroke: 2px white;">باغ ریاضی</h1>
-            <div class="bg-white/50 px-6 py-2 rounded-full backdrop-blur-sm">
-                <p class="text-xl text-indigo-600 font-bold">بازی کن و جایزه بگیر! 🎓</p>
-            </div>
-            <!-- نمایش رکوردها -->
             <div class="flex gap-2 mt-4 justify-center">
                 <div class="bg-yellow-300/80 px-3 py-1 rounded-full backdrop-blur-sm shadow border-2 border-yellow-400">
                     <p class="text-sm text-yellow-900 font-bold">🏆 کلاس اول: <span id="home-score-basic">0</span></p>
@@ -216,28 +173,26 @@
         </div>
 
         <div class="w-full max-w-sm space-y-4">
-            <!-- بازی مرحله‌ای -->
             <button onclick="startAdventureMode()" class="btn-game w-full bg-teal-500 hover:bg-teal-600 border-b-4 border-teal-700 text-white text-3xl font-bold py-5 rounded-3xl flex items-center justify-center gap-3 animate-pulse-slow">
                 <span>⭐</span> بازی مرحله‌ای
             </button>
 
-            <!-- انتخاب بازی‌ها -->
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-white/40 p-2 rounded-2xl">
                     <h2 class="text-sm font-black text-center text-indigo-600 mb-2">کلاس اول</h2>
                     <div class="space-y-2">
-                        <button onclick="startGame('add')" class="btn-game w-full bg-green-400 border-b-4 border-green-600 text-white text-lg font-bold py-2 rounded-xl">جمع (+)</button>
-                        <button onclick="startGame('subtract')" class="btn-game w-full bg-orange-400 border-b-4 border-orange-600 text-white text-lg font-bold py-2 rounded-xl">تفریق (-)</button>
-                        <button onclick="startGame('compare')" class="btn-game w-full bg-blue-400 border-b-4 border-blue-600 text-white text-lg font-bold py-2 rounded-xl">مقایسه (<>)</button>
+                        <button onclick="openDifficultySelector('add')" class="btn-game w-full bg-green-400 border-b-4 border-green-600 text-white text-lg font-bold py-2 rounded-xl">جمع (+)</button>
+                        <button onclick="openDifficultySelector('subtract')" class="btn-game w-full bg-orange-400 border-b-4 border-orange-600 text-white text-lg font-bold py-2 rounded-xl">تفریق (-)</button>
+                        <button onclick="openDifficultySelector('compare')" class="btn-game w-full bg-blue-400 border-b-4 border-blue-600 text-white text-lg font-bold py-2 rounded-xl">مقایسه (<>)</button>
                         <button onclick="startChallenge('basic')" class="btn-game w-full bg-rose-400 border-b-4 border-rose-600 text-white text-lg font-bold py-2 rounded-xl">چالشی ⏱️</button>
                     </div>
                 </div>
                 <div class="bg-white/40 p-2 rounded-2xl">
                     <h2 class="text-sm font-black text-center text-indigo-600 mb-2">پیشرفته</h2>
                     <div class="space-y-2">
-                        <button onclick="startGame('multiply')" class="btn-game w-full bg-purple-400 border-b-4 border-purple-600 text-white text-lg font-bold py-2 rounded-xl">ضرب (×)</button>
-                        <button onclick="startGame('divide')" class="btn-game w-full bg-sky-400 border-b-4 border-sky-600 text-white text-lg font-bold py-2 rounded-xl">تقسیم (÷)</button>
-                        <div class="h-10"></div> <!-- فاصله پرکن -->
+                        <button onclick="openDifficultySelector('multiply')" class="btn-game w-full bg-purple-400 border-b-4 border-purple-600 text-white text-lg font-bold py-2 rounded-xl">ضرب (×)</button>
+                        <button onclick="openDifficultySelector('divide')" class="btn-game w-full bg-sky-400 border-b-4 border-sky-600 text-white text-lg font-bold py-2 rounded-xl">تقسیم (÷)</button>
+                        <div class="h-10"></div>
                         <button onclick="startChallenge('advanced')" class="btn-game w-full bg-red-500 border-b-4 border-red-700 text-white text-lg font-bold py-2 rounded-xl">چالشی ⏱️</button>
                     </div>
                 </div>
@@ -246,58 +201,40 @@
         <p class="text-xs text-gray-500 mt-4 font-bold">ایده و تولید : احسان شمسی </p>
     </div>
 
-    <!-- صفحه کلکسیون استیکرها (بازطراحی شده) -->
-    <div id="sticker-collection-screen" class="hidden absolute inset-0 bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col items-center p-4 z-30 overflow-hidden">
-        <!-- هدر -->
+    <!-- کلکسیون استیکر -->
+    <div id="sticker-collection-screen" class="hidden absolute inset-0 bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col items-center p-4 z-30">
         <div class="w-full max-w-md flex justify-between items-center mb-4 mt-2 bg-white/60 p-3 rounded-2xl backdrop-blur-sm shadow-sm">
             <h1 class="text-2xl font-black text-purple-700">دفترچه جوایز 📒</h1>
             <div class="bg-purple-100 px-4 py-1 rounded-full shadow-inner border border-purple-200">
                 <span class="font-bold text-purple-800 text-sm"><span id="stickers-count">0</span> از <span id="stickers-total">0</span></span>
             </div>
         </div>
-    
-        <!-- لیست استیکرها -->
-        <div id="sticker-grid" class="w-full max-w-md grid grid-cols-3 gap-3 flex-1 overflow-y-auto pb-24 px-1 scroll-smooth content-start">
-            <!-- کارت‌های استیکر با جاوااسکریپت اینجا ساخته می‌شوند -->
-        </div>
-    
-        <!-- دکمه بازگشت -->
+        <div id="sticker-grid" class="w-full max-w-md grid grid-cols-3 gap-3 flex-1 overflow-y-auto pb-24 px-1 scroll-smooth content-start"></div>
         <div class="absolute bottom-6 w-full flex justify-center pointer-events-none">
-            <button onclick="hideStickerCollection()" class="pointer-events-auto bg-white px-10 py-3 rounded-2xl shadow-xl text-xl font-black text-purple-600 hover:bg-gray-50 border-b-4 border-gray-200 transition active:translate-y-1 active:border-b-0">
-                بازگشت 🏠
-            </button>
+            <button onclick="hideStickerCollection()" class="pointer-events-auto bg-white px-10 py-3 rounded-2xl shadow-xl text-xl font-black text-purple-600 hover:bg-gray-50 border-b-4 border-gray-200 active:translate-y-1 active:border-b-0">بازگشت 🏠</button>
         </div>
     </div>
 
     <!-- صفحه بازی -->
     <div id="game-screen" class="hidden w-full h-full flex flex-col bg-gradient-to-b from-blue-50 to-purple-50">
-        
         <div class="flex justify-between items-center p-4">
             <button onclick="showHome()" class="bg-white p-3 rounded-2xl shadow-sm text-2xl hover:bg-gray-50 border-b-2 border-gray-200">🏠</button>
-           
             <div id="adventure-level-display" class="hidden bg-teal-500 px-4 py-2 rounded-full shadow-lg border-2 border-white">
                 <span class="text-xl font-black text-white">مرحله: <span id="current-level">1</span></span>
             </div>
-
             <div id="timer-display" class="hidden bg-red-500 px-4 py-2 rounded-full shadow-lg border-2 border-white transform rotate-2">
                <span class="text-xl font-black text-white">⏱️ <span id="time-left">60</span></span>
            </div>
-
             <div id="score-display" class="bg-yellow-400 px-4 py-2 rounded-full shadow-lg border-2 border-white transform -rotate-2">
                 <span class="text-xl font-black text-yellow-900">امتیاز: <span id="score">0</span></span>
             </div>
         </div>
 
         <div class="flex-1 flex flex-col items-center px-4 pt-2 pb-8 gap-4 overflow-y-auto">
-            
-            <!-- بخش تصویری -->
-            <div class="w-full bg-white rounded-3xl shadow-xl p-4 border-4 border-blue-100 min-h-[260px] flex flex-col items-center justify-center relative overflow-hidden">
+            <!-- اضافه کردن flex-1 برای پر کردن فضای خالی -->
+            <div class="w-full flex-1 bg-white rounded-3xl shadow-xl p-4 border-4 border-blue-100 min-h-[300px] flex flex-col items-center justify-center relative overflow-hidden">
                 <div class="absolute top-[-50%] right-[-50%] w-full h-full bg-blue-50 rounded-full opacity-50 z-0 pointer-events-none"></div>
-                
-                <div id="visual-container" class="w-full z-10 flex justify-center items-center min-h-[160px]">
-                    <!-- محتوا -->
-                </div>
-
+                <div id="visual-container" class="w-full z-10 flex justify-center items-center min-h-[160px]"></div>
                 <div class="mt-4 bg-gray-100 px-6 py-2 rounded-2xl flex items-center gap-2 text-4xl font-black text-gray-600 z-10 shadow-inner" dir="ltr">
                     <span id="math-n1" class="text-blue-500"></span>
                     <span id="math-op" class="text-gray-400"></span>
@@ -306,83 +243,50 @@
                     <span class="text-purple-600">?</span>
                 </div>
             </div>
-
-            <div id="hint-text" class="text-base font-bold text-indigo-400 h-6 text-center">
-                <!-- متن راهنما -->
-            </div>
-
-            <div id="options-container" class="w-full grid grid-cols-3 gap-3 mt-auto">
-                <!-- دکمه‌ها -->
-            </div>
+            <div id="hint-text" class="text-base font-bold text-indigo-400 h-6 text-center"></div>
+            <div id="options-container" class="w-full grid grid-cols-3 gap-3 mt-auto"></div>
         </div>
     </div>
 
     <script>
-        // --- دیتابیس استیکرها (Achievement System) ---
+        // --- دیتابیس استیکرها ---
         const STICKER_DB = [
-            // سطح ۱: شروع کننده
             { id: 's_welcome', icon: '🐣', name: 'تازه وارد', desc: 'اولین بازی رو انجام بده', rarity: 'common', check: (s) => s.totalGames >= 1 },
             { id: 's_score10', icon: '🥉', name: 'شاگرد خوب', desc: '۱۰ تا جواب درست بده', rarity: 'common', check: (s) => s.totalCorrect >= 10 },
-            { id: 's_add_novice', icon: '➕', name: 'جمع‌بند ۱', desc: '۳ بار بازی جمع رو ببر', rarity: 'common', check: (s) => s.winsAdd >= 3 },
-            
-            // سطح ۲: تلاشگر
-            { id: 's_sub_novice', icon: '➖', name: 'کم‌کننده ۱', desc: '۳ بار بازی تفریق رو ببر', rarity: 'common', check: (s) => s.winsSub >= 3 },
+            { id: 's_add_novice', icon: '➕', name: 'جمع‌بند', desc: '۳ بار بازی جمع رو ببر', rarity: 'common', check: (s) => s.winsAdd >= 3 },
+            { id: 's_sub_novice', icon: '➖', name: 'کم‌کننده', desc: '۳ بار بازی تفریق رو ببر', rarity: 'common', check: (s) => s.winsSub >= 3 },
             { id: 's_compare_novice', icon: '⚖️', name: 'ترازو', desc: '۳ بار بازی مقایسه رو ببر', rarity: 'common', check: (s) => s.winsCompare >= 3 },
             { id: 's_level5', icon: '🏃‍♂️', name: 'ماجراجو', desc: 'به مرحله ۵ ماجراجویی برس', rarity: 'rare', check: (s) => s.maxLevel >= 5 },
-            
-            // سطح ۳: پیشرفته
             { id: 's_score50', icon: '🥈', name: 'ریاضی‌دان', desc: '۵۰ تا جواب درست جمع کن', rarity: 'rare', check: (s) => s.totalCorrect >= 50 },
-            { id: 's_mul_master', icon: '✖️', name: 'ضرب‌در', desc: 'جدول ضرب رو یاد گرفتی! (۵ برد)', rarity: 'rare', check: (s) => s.winsMul >= 5 },
+            { id: 's_mul_master', icon: '✖️', name: 'ضرب‌در', desc: '۵ بار بازی ضرب رو ببر', rarity: 'rare', check: (s) => s.winsMul >= 5 },
             { id: 's_div_master', icon: '➗', name: 'تقسیم‌گر', desc: '۵ بار بازی تقسیم رو ببر', rarity: 'rare', check: (s) => s.winsDiv >= 5 },
-
-            // سطح ۴: قهرمان
             { id: 's_challenge_basic', icon: '🏎️', name: 'سرعتی', desc: 'امتیاز ۲۰ در چالشی ساده', rarity: 'epic', check: (s) => s.highScoreBasic >= 20 },
             { id: 's_level15', icon: '🏰', name: 'شوالیه باغ', desc: 'به مرحله ۱۵ برس', rarity: 'epic', check: (s) => s.maxLevel >= 15 },
-            { id: 's_score100', icon: '🥇', name: 'صدتایی', desc: '۱۰۰ تا جواب درست!', rarity: 'epic', check: (s) => s.totalCorrect >= 100 },
-
-            // سطح ۵: افسانه‌ای
             { id: 's_expert', icon: '🧠', name: 'نابغه', desc: 'امتیاز ۳۰ در چالشی پیشرفته', rarity: 'legendary', check: (s) => s.highScoreAdv >= 30 },
             { id: 's_master', icon: '🏆', name: 'قهرمان جهان', desc: '۵۰۰ تا جواب درست!', rarity: 'legendary', check: (s) => s.totalCorrect >= 500 },
             { id: 's_king', icon: '👑', name: 'پادشاه باغ', desc: 'به مرحله ۵۰ برس', rarity: 'legendary', check: (s) => s.maxLevel >= 50 }
         ];
 
-        // --- مدیریت داده‌های بازیکن ---
         let playerStats = {
-            totalGames: 0,
-            totalCorrect: 0,
-            maxLevel: 1,
-            winsAdd: 0,
-            winsSub: 0,
-            winsMul: 0,
-            winsDiv: 0,
-            winsCompare: 0,
-            highScoreBasic: 0,
-            highScoreAdv: 0,
-            unlockedStickers: [] // IDs only
+            totalGames: 0, totalCorrect: 0, maxLevel: 1,
+            winsAdd: 0, winsSub: 0, winsMul: 0, winsDiv: 0, winsCompare: 0,
+            highScoreBasic: 0, highScoreAdv: 0, unlockedStickers: []
         };
-
-        // صف نمایش استیکرها برای جلوگیری از تداخل
         let stickerNotificationQueue = [];
 
         function loadUserData() {
             const saved = localStorage.getItem('mathGardenStats_v3');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                playerStats = { ...playerStats, ...parsed };
-            }
+            if (saved) playerStats = { ...playerStats, ...JSON.parse(saved) };
             updateHomeStats();
         }
-
         function saveUserData() {
             localStorage.setItem('mathGardenStats_v3', JSON.stringify(playerStats));
             updateHomeStats();
         }
-
         function updateHomeStats() {
             document.getElementById('home-score-basic').innerText = playerStats.highScoreBasic.toLocaleString('fa-IR');
             document.getElementById('home-score-advanced').innerText = playerStats.highScoreAdv.toLocaleString('fa-IR');
         }
-
         function updateStats(type, isWin, currentScore = 0) {
             playerStats.totalGames++;
             if(isWin) {
@@ -393,27 +297,17 @@
                 if(type === 'divide') playerStats.winsDiv++;
                 if(type === 'compare') playerStats.winsCompare++;
             }
-
-            if (isAdventureMode) {
-                if (currentLevel > playerStats.maxLevel) playerStats.maxLevel = currentLevel;
-            }
-
+            if (isAdventureMode && currentLevel > playerStats.maxLevel) playerStats.maxLevel = currentLevel;
             if (isChallengeMode) {
-                if (challengeType === 'basic') {
-                    if (currentScore > playerStats.highScoreBasic) playerStats.highScoreBasic = currentScore;
-                } else {
-                    if (currentScore > playerStats.highScoreAdv) playerStats.highScoreAdv = currentScore;
-                }
+                if (challengeType === 'basic' && currentScore > playerStats.highScoreBasic) playerStats.highScoreBasic = currentScore;
+                if (challengeType === 'advanced' && currentScore > playerStats.highScoreAdv) playerStats.highScoreAdv = currentScore;
             }
-
             saveUserData();
             checkNewStickers();
         }
 
-        // --- سیستم باز شدن استیکر ---
         function checkNewStickers() {
             let foundNew = false;
-
             STICKER_DB.forEach(sticker => {
                 if (!playerStats.unlockedStickers.includes(sticker.id) && sticker.check(playerStats)) {
                     playerStats.unlockedStickers.push(sticker.id);
@@ -421,114 +315,63 @@
                     foundNew = true;
                 }
             });
-
             if (foundNew) {
                 saveUserData();
-                
-                // اگر در حالت چالشی هستیم، مزاحم نمی‌شویم و فقط در صف نگه می‌داریم
-                if (!isChallengeMode) {
-                    showNextSticker();
-                }
+                if (!isChallengeMode) showNextSticker();
             }
         }
-
         function showNextSticker() {
-            // اگر مودی باز است، صبر کن (از تداخل جلوگیری می‌کند)
             if (document.getElementById('new-sticker-modal').classList.contains('active')) return;
             if (stickerNotificationQueue.length === 0) return;
-
-            const sticker = stickerNotificationQueue.shift(); // برداشتن اولین آیتم
+            const sticker = stickerNotificationQueue.shift();
             showNewStickerModal(sticker);
         }
-
         function showNewStickerModal(sticker) {
             const modal = document.getElementById('new-sticker-modal');
             document.getElementById('new-sticker-icon').innerText = sticker.icon;
             document.getElementById('new-sticker-name').innerText = sticker.name;
             document.getElementById('new-sticker-desc').innerText = sticker.desc;
-            
             modal.classList.add('active');
             playSound('correct');
             triggerConfetti();
         }
-
         function closeStickerModal() {
             document.getElementById('new-sticker-modal').classList.remove('active');
-            
-            // چک کردن اینکه آیا استیکر دیگری در صف هست یا نه
-            if (stickerNotificationQueue.length > 0) {
-                setTimeout(showNextSticker, 300); // وقفه کوتاه برای زیبایی
-            } else if (isChallengeMode && timeLeft <= 0) {
-                // اگر چالشی تمام شده بود و همه استیکرها را دیدیم، برو خانه
-                showHome();
-            }
+            if (stickerNotificationQueue.length > 0) setTimeout(showNextSticker, 300);
+            else if (isChallengeMode && timeLeft <= 0) showHome();
         }
-
-        // --- رندر کلکسیون استیکرها ---
         function renderStickers() {
             const grid = document.getElementById('sticker-grid');
             grid.innerHTML = '';
-            
             document.getElementById('stickers-count').innerText = playerStats.unlockedStickers.length.toLocaleString('fa-IR');
             document.getElementById('stickers-total').innerText = STICKER_DB.length.toLocaleString('fa-IR');
-
             STICKER_DB.forEach(sticker => {
                 const isUnlocked = playerStats.unlockedStickers.includes(sticker.id);
-                
                 const card = document.createElement('div');
                 let classes = "sticker-card rounded-2xl p-2 flex flex-col items-center justify-between min-h-[130px] border-4 cursor-pointer relative ";
-                
                 if (!isUnlocked) {
                     classes += "sticker-locked border-gray-300";
-                    card.innerHTML = `
-                        <div class="flex-1 flex items-center justify-center opacity-30 text-4xl grayscale filter">${sticker.icon}</div>
-                        <div class="w-full text-[10px] text-gray-500 font-bold text-center bg-white/60 rounded-lg px-1 py-1 mt-2">
-                            ${sticker.desc}
-                        </div>
-                    `;
+                    card.innerHTML = `<div class="flex-1 flex items-center justify-center opacity-30 text-4xl grayscale filter">${sticker.icon}</div><div class="w-full text-[10px] text-gray-500 font-bold text-center bg-white/60 rounded-lg px-1 py-1 mt-2">${sticker.desc}</div>`;
                 } else {
                     if(sticker.rarity === 'common') classes += "bg-white border-blue-200 shadow-md";
                     if(sticker.rarity === 'rare') classes += "bg-gradient-to-b from-blue-50 to-purple-50 border-purple-300 shadow-lg rare-shine";
                     if(sticker.rarity === 'epic') classes += "bg-gradient-to-b from-rose-50 to-pink-100 border-rose-400 shadow-xl rare-shine";
                     if(sticker.rarity === 'legendary') classes += "bg-gradient-to-b from-yellow-50 to-amber-100 border-amber-400 shadow-2xl rare-shine";
-
-                    card.innerHTML = `
-                        <div class="text-5xl mb-1 filter drop-shadow-sm animate-pop mt-2">${sticker.icon}</div>
-                        <div class="text-center w-full">
-                            <div class="text-xs font-black text-gray-800 leading-tight mb-1">${sticker.name}</div>
-                            <div class="text-[9px] text-gray-500 font-bold leading-tight px-1">${sticker.desc}</div>
-                        </div>
-                    `;
-                    
-                    card.onclick = () => {
-                        card.style.transform = 'scale(0.9)';
-                        setTimeout(() => card.style.transform = 'scale(1)', 150);
-                    };
+                    card.innerHTML = `<div class="text-5xl mb-1 filter drop-shadow-sm animate-pop mt-2">${sticker.icon}</div><div class="text-center w-full"><div class="text-xs font-black text-gray-800 leading-tight mb-1">${sticker.name}</div><div class="text-[9px] text-gray-500 font-bold leading-tight px-1">${sticker.desc}</div></div>`;
+                    card.onclick = () => { card.style.transform = 'scale(0.9)'; setTimeout(() => card.style.transform = 'scale(1)', 150); };
                 }
                 card.className = classes;
                 grid.appendChild(card);
             });
         }
 
-        // --- تنظیمات صوتی و عمومی ---
-        const audioContext = {
-            correct: new Audio("https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"),
-            wrong: new Audio("https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3")
-        };
+        // --- صوتی و متغیرها ---
+        const audioContext = { correct: new Audio("https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"), wrong: new Audio("https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3") };
+        function playSound(type) { try { if(audioContext[type]) { audioContext[type].currentTime = 0; audioContext[type].volume = 0.5; audioContext[type].play().catch(e=>{}); } } catch (e) {} }
 
-        function playSound(type) {
-            try {
-                const sound = audioContext[type];
-                if(sound) {
-                    sound.currentTime = 0; sound.volume = 0.5;
-                    sound.play().catch(e => console.log("Audio blocked"));
-                }
-            } catch (e) { console.log("Audio Error", e); }
-        }
-
-        // --- متغیرهای بازی ---
         let score = 0;
         let currentMode = 'add';
+        let currentDifficulty = 'easy'; // 'easy' or 'hard'
         let correctAnswer = 0;
         let isLocked = false;
         let isChallengeMode = false;
@@ -538,10 +381,40 @@
         let timerInterval = null;
         let timeLeft = 60;
         let wrongAttempts = 0;
-
+        let tempSelectedMode = ''; // برای مودال انتخاب سطح
         const icons = ['🍎', '🍐', '🍓', '🍄', '🐼', '🦁', '🚗', '🎈', '⚽', '⭐'];
 
-        // --- منطق بازی ---
+        // --- مدیریت انتخاب سطح ---
+        function openDifficultySelector(mode) {
+            tempSelectedMode = mode;
+            const modal = document.getElementById('difficulty-modal');
+            const title = document.getElementById('diff-modal-title');
+            const easyText = document.getElementById('diff-easy-text');
+            const hardText = document.getElementById('diff-hard-text');
+
+            modal.classList.add('active');
+
+            if (mode === 'add' || mode === 'subtract' || mode === 'compare') {
+                title.innerText = "انتخاب سطح کلاس اول";
+                easyText.innerText = "ساده (اعداد زیر ۱۰)";
+                hardText.innerText = "پیشرفته (۱۰ تا ۲۰)";
+            } else {
+                title.innerText = "انتخاب سطح پیشرفته";
+                easyText.innerText = "مقدماتی (اعداد کوچک)";
+                hardText.innerText = "حرفه‌ای (تا ۱۰۰)";
+            }
+        }
+
+        function selectDifficulty(diff) {
+            currentDifficulty = diff;
+            document.getElementById('difficulty-modal').classList.remove('active');
+            startGame(tempSelectedMode);
+        }
+
+        function closeDifficultyModal() {
+            document.getElementById('difficulty-modal').classList.remove('active');
+        }
+
         function startGame(mode) {
             setupGameEnvironment();
             isAdventureMode = false;
@@ -559,7 +432,6 @@
            challengeType = type;
            score = 0;
            updateScoreDisplay();
-           
            document.getElementById('adventure-level-display').classList.add('hidden');
            document.getElementById('timer-display').classList.remove('hidden');
            startTimer();
@@ -571,12 +443,10 @@
            isAdventureMode = true;
            isChallengeMode = false;
            currentLevel = playerStats.maxLevel;
-           
            document.getElementById('score-display').classList.add('hidden');
            document.getElementById('adventure-level-display').classList.remove('hidden');
            document.getElementById('current-level').innerText = currentLevel.toLocaleString('fa-IR');
            document.getElementById('timer-display').classList.add('hidden');
-
            generateLevel();
         }
 
@@ -598,37 +468,40 @@
         }
 
         function showStickerCollection() {
-           document.getElementById('home-screen').classList.add('hidden');
            renderStickers();
+           document.getElementById('home-screen').classList.add('hidden');
            document.getElementById('sticker-collection-screen').classList.remove('hidden');
         }
-
         function hideStickerCollection() {
            document.getElementById('sticker-collection-screen').classList.add('hidden');
            document.getElementById('home-screen').classList.remove('hidden');
         }
+        function updateScoreDisplay() { document.getElementById('score').innerText = score.toLocaleString('fa-IR'); }
 
-        function updateScoreDisplay() {
-            document.getElementById('score').innerText = score.toLocaleString('fa-IR');
-        }
-
+        // --- منطق اصلی تولید سوال ---
         function generateLevel() {
            if (isChallengeMode && timeLeft <= 0) return;
 
-           // انتخاب مود بر اساس نوع بازی
+           // انتخاب مود و سختی برای چالش‌ها
            if (isChallengeMode) {
-               // کلاس اول: جمع + تفریق + مقایسه
-               // پیشرفته: همه موارد
-               const modes = challengeType === 'basic' 
-                   ? ['add', 'subtract', 'compare'] 
-                   : ['add', 'subtract', 'multiply', 'divide', 'compare'];
-               
-               currentMode = modes[Math.floor(Math.random() * modes.length)];
+               const randDiff = Math.random() > 0.5 ? 'easy' : 'hard';
+               currentDifficulty = randDiff;
+
+               if (challengeType === 'basic') {
+                   // کلاس اول: فقط جمع، تفریق، مقایسه
+                   const modes = ['add', 'subtract', 'compare'];
+                   currentMode = modes[Math.floor(Math.random() * modes.length)];
+               } else {
+                   // پیشرفته: همه چیز
+                   const modes = ['add', 'subtract', 'multiply', 'divide', 'compare'];
+                   currentMode = modes[Math.floor(Math.random() * modes.length)];
+               }
            } else if (isAdventureMode) {
-               const difficulty = Math.min(Math.floor(currentLevel / 5), 4);
+               // سختی بر اساس لول
+               currentDifficulty = currentLevel < 10 ? 'easy' : 'hard';
                const adventureModes = ['add', 'subtract', 'compare'];
-               if (currentLevel > 10) adventureModes.push('multiply');
-               if (currentLevel > 20) adventureModes.push('divide');
+               if (currentLevel > 15) adventureModes.push('multiply');
+               if (currentLevel > 25) adventureModes.push('divide');
                currentMode = adventureModes[Math.floor(Math.random() * adventureModes.length)];
            }
 
@@ -646,105 +519,109 @@
             let n1, n2;
             const icon = icons[Math.floor(Math.random() * icons.length)];
 
+            // --- لاجیک ریاضی با محدودیت‌های جدید ---
             if (currentMode === 'add') {
-                n1 = Math.floor(Math.random() * 6) + 1; 
-                n2 = Math.floor(Math.random() * 6) + 1;
+                if (currentDifficulty === 'easy') {
+                    // زیر ۱۰: مجموع نهایی حداکثر ۱۰
+                    n1 = Math.floor(Math.random() * 5) + 1; // 1-5
+                    n2 = Math.floor(Math.random() * 5) + 1; // 1-5
+                } else {
+                    // ۱۰ تا ۲۰: هر عدد حداقل ۵
+                    n1 = Math.floor(Math.random() * 6) + 5; // 5-10
+                    n2 = Math.floor(Math.random() * 6) + 5; // 5-10
+                }
                 correctAnswer = n1 + n2;
                 document.getElementById('math-op').innerText = '+';
                 hintText.innerText = "همه رو با هم بشمار!";
-                const container = createUnionContainer(n1, n2, icon);
-                visualContainer.appendChild(container);
+                visualContainer.appendChild(createUnionContainer(n1, n2, icon));
 
             } else if (currentMode === 'subtract') {
-                n1 = Math.floor(Math.random() * 8) + 2;
-                n2 = Math.floor(Math.random() * (n1 - 1)) + 1;
+                if (currentDifficulty === 'easy') {
+                    // زیر ۱۰
+                    n1 = Math.floor(Math.random() * 8) + 2; // 2-9
+                    n2 = Math.floor(Math.random() * (n1 - 1)) + 1;
+                } else {
+                    // ۱۰ تا ۲۰
+                    n1 = Math.floor(Math.random() * 10) + 11; // 11-20
+                    n2 = Math.floor(Math.random() * 9) + 1; // 1-9 (کم کردن عدد تک رقمی از دو رقمی)
+                }
                 correctAnswer = n1 - n2;
                 document.getElementById('math-op').innerText = '-';
                 hintText.innerText = "چند تا شکل سالم مونده؟";
-                const container = document.createElement('div');
-                container.className = "flex flex-wrap justify-center gap-2 p-2";
-                for(let i=0; i<n1; i++) {
-                    const span = createIcon(icon, i * 0.1);
-                    if (i >= (n1 - n2)) {
-                        span.classList.add('crossed-out');
-                        setTimeout(() => { span.style.opacity = "0.5"; span.style.transform = "scale(0.9)"; }, 800 + (i * 100));
-                    }
-                    container.appendChild(span);
+                visualContainer.appendChild(createSubtractContainer(n1, n2, icon));
+
+            } else if (currentMode === 'multiply') {
+                if (currentDifficulty === 'easy') {
+                    // اعداد کوچک (جدول ضرب ساده)
+                    n1 = Math.floor(Math.random() * 3) + 2; // 2-4
+                    n2 = Math.floor(Math.random() * 4) + 1; // 1-4
+                } else {
+                    // تا ۱۰۰ (ضرب اعداد بزرگتر)
+                    n1 = Math.floor(Math.random() * 8) + 2; // 2-9
+                    n2 = Math.floor(Math.random() * 8) + 2; // 2-9
+                    // محدودیت حاصلضرب زیر ۱۰۰
+                    while (n1 * n2 > 100) { n2--; }
                 }
-                visualContainer.appendChild(container);
+                correctAnswer = n1 * n2;
+                document.getElementById('math-op').innerText = '×';
+                hintText.innerText = `چند تا دسته ${n2.toLocaleString('fa-IR')} تایی؟`;
+                visualContainer.appendChild(createGroupContainer(n1, n2, icon));
 
-           } else if (currentMode === 'multiply') {
-               n1 = Math.floor(Math.random() * 3) + 2;
-               n2 = Math.floor(Math.random() * 4) + 2;
-               correctAnswer = n1 * n2;
-               document.getElementById('math-op').innerText = '×';
-               hintText.innerText = `چند تا دسته ${n2.toLocaleString('fa-IR')} تایی؟`;
-               const container = document.createElement('div');
-               container.className = "flex flex-wrap justify-center items-center gap-2";
-               for(let i=0; i<n1; i++) {
-                   const group = document.createElement('div');
-                   group.className = "flex flex-wrap justify-center gap-1 p-2 border-2 border-purple-200 rounded-xl bg-purple-50 animate-pop";
-                   group.style.animationDelay = (i * 0.15) + 's';
-                   for(let j=0; j<n2; j++) group.appendChild(createIcon(icon, 0));
-                   container.appendChild(group);
-               }
-               visualContainer.appendChild(container);
+            } else if (currentMode === 'divide') {
+                if (currentDifficulty === 'easy') {
+                    // مقسوم زیر ۲۰
+                    const d = Math.floor(Math.random() * 3) + 2;
+                    const q = Math.floor(Math.random() * 3) + 2;
+                    n1 = d * q;
+                    n2 = d;
+                    correctAnswer = q;
+                } else {
+                    // مقسوم تا ۱۰۰
+                    correctAnswer = Math.floor(Math.random() * 8) + 2; // خارج قسمت
+                    n2 = Math.floor(Math.random() * 8) + 2; // مقسوم علیه
+                    n1 = correctAnswer * n2;
+                    // اطمینان از زیر ۱۰۰ بودن
+                    while (n1 > 100) {
+                         correctAnswer--;
+                         n1 = correctAnswer * n2;
+                    }
+                    if(correctAnswer < 1) correctAnswer = 1;
+                }
+                document.getElementById('math-op').innerText = '÷';
+                hintText.innerText = `دسته‌های ${n2.toLocaleString('fa-IR')} تایی بساز!`;
+                visualContainer.appendChild(createDivideContainer(n1, icon));
 
-           } else if (currentMode === 'divide') {
-               const groupSize = Math.floor(Math.random() * 3) + 2;
-               correctAnswer = Math.floor(Math.random() * 3) + 2;
-               n1 = groupSize * correctAnswer;
-               n2 = groupSize;
-               document.getElementById('math-op').innerText = '÷';
-               hintText.innerText = `دسته‌های ${n2.toLocaleString('fa-IR')} تایی بساز!`;
-               const container = document.createElement('div');
-               container.id = "divide-container";
-               container.className = "flex flex-wrap justify-center items-center gap-2";
-               for(let i=0; i<n1; i++) {
-                   const ic = createIcon(icon, i * 0.05);
-                   ic.classList.add('division-icon');
-                   container.appendChild(ic);
-               }
-               visualContainer.appendChild(container);
+            } else if (currentMode === 'compare') {
+                if (currentDifficulty === 'easy') {
+                    n1 = Math.floor(Math.random() * 9) + 1;
+                    n2 = Math.floor(Math.random() * 9) + 1;
+                } else {
+                    n1 = Math.floor(Math.random() * 20) + 10;
+                    n2 = Math.floor(Math.random() * 20) + 10;
+                }
+                if (n1 > n2) correctAnswer = '>';
+                else if (n1 < n2) correctAnswer = '<';
+                else correctAnswer = '=';
+                hintText.innerText = "کدوم طرف بیشتره؟";
+                visualContainer.appendChild(createCompareContainer(n1, n2, icon));
+            }
 
-           } else if (currentMode === 'compare') {
-               n1 = Math.floor(Math.random() * 9) + 1;
-               do { n2 = Math.floor(Math.random() * 9) + 1; } while (n1 === n2 && Math.random() < 0.7);
-               if (n1 > n2) correctAnswer = '>';
-               else if (n1 < n2) correctAnswer = '<';
-               else correctAnswer = '=';
-               hintText.innerText = "کدوم طرف بیشتره؟";
-               const container = document.createElement('div');
-               container.className = "flex justify-around items-center w-full";
-               const g1 = document.createElement('div');
-               g1.className = "flex flex-wrap justify-center gap-1 p-2 border-2 border-blue-200 rounded-xl bg-blue-50 w-2/5";
-               for(let i=0; i<n1; i++) g1.appendChild(createIcon(icon, i * 0.05));
-               const q = document.createElement('div');
-               q.className = "text-4xl font-black text-gray-300";
-               q.innerText = "?";
-               const g2 = document.createElement('div');
-               g2.className = "flex flex-wrap justify-center gap-1 p-2 border-2 border-pink-200 rounded-xl bg-pink-50 w-2/5";
-               for(let i=0; i<n2; i++) g2.appendChild(createIcon(icon, i * 0.05));
-               container.appendChild(g1);
-               container.appendChild(q);
-               container.appendChild(g2);
-               visualContainer.appendChild(container);
-           }
-
-           const mathPanel = document.querySelector('.mt-4.bg-gray-100');
-           if (currentMode === 'compare') {
-               mathPanel.classList.add('hidden');
-           } else {
-               mathPanel.classList.remove('hidden');
-               document.getElementById('math-n1').innerText = n1.toLocaleString('fa-IR');
-               document.getElementById('math-n2').innerText = n2.toLocaleString('fa-IR');
-           }
-           createOptions(correctAnswer);
+            const mathPanel = document.querySelector('.mt-4.bg-gray-100');
+            if (currentMode === 'compare') {
+                mathPanel.classList.add('hidden');
+            } else {
+                mathPanel.classList.remove('hidden');
+                document.getElementById('math-n1').innerText = n1.toLocaleString('fa-IR');
+                document.getElementById('math-n2').innerText = n2.toLocaleString('fa-IR');
+            }
+            createOptions(correctAnswer);
         }
 
-        function createIcon(char, delay) {
+        // --- توابع ساخت گرافیک (Visual Generators) ---
+        function createIcon(char, delay, small = false) {
             const span = document.createElement('div');
             span.className = "item-icon animate-pop filter drop-shadow-sm cursor-pointer select-none";
+            if(small) { span.style.width = '1.8rem'; span.style.height = '1.8rem'; span.style.fontSize = '1.4rem'; }
             span.innerText = char;
             span.style.animationDelay = delay + "s";
             return span;
@@ -753,16 +630,24 @@
         function createUnionContainer(n1, n2, icon) {
             const big = document.createElement('div');
             big.className = "union-container flex items-center justify-center gap-2 p-4 w-full animate-pop";
+            
+            // اگر تعداد زیاد است، سایز را کوچک کن
+            const isMany = (n1 + n2) > 12;
+
             const g1 = document.createElement('div');
             g1.className = "flex flex-wrap justify-center gap-1 max-w-[45%]";
-            for(let i=0; i<n1; i++) g1.appendChild(createIcon(icon, i*0.1));
+            for(let i=0; i<n1; i++) g1.appendChild(createIcon(icon, i*0.05, isMany));
+
             const plus = document.createElement('div');
             plus.className = "text-4xl font-black text-green-500 mx-1";
             plus.innerText = "+";
+
             const g2 = document.createElement('div');
             g2.className = "flex flex-wrap justify-center gap-1 max-w-[45%]";
-            for(let i=0; i<n2; i++) g2.appendChild(createIcon(icon, (n1*0.1)+(i*0.1)));
+            for(let i=0; i<n2; i++) g2.appendChild(createIcon(icon, (n1*0.05)+(i*0.05), isMany));
+
             big.appendChild(g1); big.appendChild(plus); big.appendChild(g2);
+            
             const label = document.createElement('div');
             label.className = "union-label";
             label.innerText = "با هم...";
@@ -770,23 +655,100 @@
             return big;
         }
 
+        function createSubtractContainer(n1, n2, icon) {
+            const container = document.createElement('div');
+            container.className = "flex flex-wrap justify-center gap-2 p-2 max-h-[55vh] overflow-y-auto";
+            const isMany = n1 > 12;
+            for(let i=0; i<n1; i++) {
+                const span = createIcon(icon, i * 0.05, isMany);
+                if (i >= (n1 - n2)) {
+                    span.classList.add('crossed-out');
+                    setTimeout(() => { span.style.opacity = "0.5"; span.style.transform = "scale(0.9)"; }, 800 + (i * 50));
+                }
+                container.appendChild(span);
+            }
+            return container;
+        }
+
+        function createGroupContainer(groups, perGroup, icon) {
+            const container = document.createElement('div');
+            container.className = "flex flex-wrap justify-center items-center gap-2 max-h-[55vh] overflow-y-auto";
+            const isMany = (groups * perGroup) > 20;
+            
+            for(let i=0; i<groups; i++) {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = "flex flex-wrap justify-center gap-1 p-1 border-2 border-purple-200 rounded-xl bg-purple-50 animate-pop";
+                groupDiv.style.animationDelay = (i * 0.1) + 's';
+                
+                // برای اعداد خیلی بزرگ (مثل ۵۰ تا)، فقط باکس خالی با عدد نمایش بده
+                if (isMany && perGroup > 5) {
+                     groupDiv.className += " w-12 h-12 flex items-center justify-center font-bold text-purple-600 text-lg";
+                     groupDiv.innerText = perGroup.toLocaleString('fa-IR');
+                } else {
+                    for(let j=0; j<perGroup; j++) groupDiv.appendChild(createIcon(icon, 0, true));
+                }
+                container.appendChild(groupDiv);
+            }
+            return container;
+        }
+
+        function createDivideContainer(total, icon) {
+            const container = document.createElement('div');
+            container.id = "divide-container";
+            container.className = "flex flex-wrap justify-center items-center gap-1 max-h-[55vh] overflow-y-auto";
+            const isMany = total > 25;
+            for(let i=0; i<total; i++) {
+                const ic = createIcon(icon, i * 0.02, isMany);
+                ic.classList.add('division-icon');
+                container.appendChild(ic);
+            }
+            return container;
+        }
+
+        function createCompareContainer(n1, n2, icon) {
+            const container = document.createElement('div');
+            container.className = "flex justify-around items-center w-full";
+            const isMany = Math.max(n1, n2) > 10;
+
+            const g1 = document.createElement('div');
+            g1.className = "flex flex-wrap justify-center gap-1 p-2 border-2 border-blue-200 rounded-xl bg-blue-50 w-2/5";
+            if (n1 > 20) {
+                 g1.className += " h-24 items-center font-black text-3xl text-blue-500"; g1.innerText = n1.toLocaleString('fa-IR');
+            } else {
+                 for(let i=0; i<n1; i++) g1.appendChild(createIcon(icon, i*0.05, isMany));
+            }
+
+            const q = document.createElement('div');
+            q.className = "text-4xl font-black text-gray-300";
+            q.innerText = "?";
+
+            const g2 = document.createElement('div');
+            g2.className = "flex flex-wrap justify-center gap-1 p-2 border-2 border-pink-200 rounded-xl bg-pink-50 w-2/5";
+            if (n2 > 20) {
+                 g2.className += " h-24 items-center font-black text-3xl text-pink-500"; g2.innerText = n2.toLocaleString('fa-IR');
+            } else {
+                for(let i=0; i<n2; i++) g2.appendChild(createIcon(icon, i*0.05, isMany));
+            }
+
+            container.appendChild(g1); container.appendChild(q); container.appendChild(g2);
+            return container;
+        }
+
         function createOptions(correct) {
             const container = document.getElementById('options-container');
             container.innerHTML = '';
             let opts = [];
-
             if (currentMode === 'compare') {
                 opts = ['<', '>', '='];
             } else {
                 opts = [correct];
                 while(opts.length < 3) {
-                    let fake = correct + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 1);
+                    let range = correct > 20 ? 10 : 3;
+                    let fake = correct + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * range) + 1);
                     if(fake >= 0 && !opts.includes(fake)) opts.push(fake);
-                    else if (opts.length < 3 && !opts.includes(correct + 1)) opts.push(correct + 1);
                 }
                 opts.sort(() => Math.random() - 0.5);
             }
-
             opts.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = "btn-game bg-white border-2 border-indigo-100 text-indigo-600 text-3xl font-black py-4 rounded-2xl hover:bg-indigo-50 active:bg-indigo-100";
@@ -796,16 +758,13 @@
             });
         }
 
+        // --- چک کردن جواب ---
         function checkAnswer(selected, btn) {
             if(isLocked) return;
-
             if(selected === correctAnswer) {
                 isLocked = true;
-                if (currentMode === 'divide' && !isChallengeMode) {
-                    animateDivisionGrouping(() => handleCorrectAnswer());
-                } else {
-                    handleCorrectAnswer();
-                }
+                if (currentMode === 'divide' && !isChallengeMode) animateDivisionGrouping(() => handleCorrectAnswer());
+                else handleCorrectAnswer();
             } else {
                 playSound('wrong');
                 if (isChallengeMode) {
@@ -815,8 +774,8 @@
                     setTimeout(() => btn.classList.remove('bg-red-200', 'border-red-400'), 500);
                 } else {
                    wrongAttempts++;
-                   btn.classList.add('shake', 'bg-red-100');
-                   setTimeout(() => btn.classList.remove('shake', 'bg-red-100'), 500);
+                   btn.classList.add('bg-red-100');
+                   setTimeout(() => btn.classList.remove('bg-red-100'), 500);
                    showFeedback(false, wrongAttempts >= 2);
                 }
             }
@@ -829,71 +788,50 @@
                document.getElementById('current-level').innerText = currentLevel.toLocaleString('fa-IR');
                updateStats(currentMode, true, 0);
                generateLevel();
-               isLocked = false;
            } else {
                score++;
                updateScoreDisplay();
                updateStats(currentMode, true, score);
-
-               if (isChallengeMode) {
-                   generateLevel();
-               } else {
-                   triggerConfetti();
-                   showFeedback(true);
-               }
+               if (isChallengeMode) generateLevel();
+               else { triggerConfetti(); showFeedback(true); }
            }
         }
 
         function animateDivisionGrouping(callback) {
             const container = document.getElementById('divide-container');
             const icons = Array.from(container.getElementsByClassName('division-icon'));
-            const n2 = icons.length / correctAnswer;
-            container.innerHTML = ''; 
-            container.style.gap = '0.75rem';
+            const n2 = Math.floor(icons.length / correctAnswer); 
+            // اگر تعداد خیلی زیاد بود، انیمیشن اجرا نکن و سریع برو بعدی
+            if (icons.length > 30) { callback(); return; }
 
+            container.innerHTML = ''; container.style.gap = '0.5rem';
             for (let i = 0; i < correctAnswer; i++) {
                 const group = document.createElement('div');
                 group.className = "flex flex-wrap justify-center gap-1 p-2 border-4 border-dashed border-sky-300 rounded-2xl bg-sky-50";
-                group.style.transform = 'scale(0)';
-                group.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                group.style.transform = 'scale(0)'; group.style.transition = 'transform 0.5s';
                 container.appendChild(group);
                 setTimeout(() => group.style.transform = 'scale(1)', i * 200);
                 for (let j = 0; j < n2; j++) {
                     const idx = i * n2 + j;
-                    if (icons[idx]) group.appendChild(icons[idx]);
+                    if (icons[idx]) { icons[idx].style.margin = '0'; group.appendChild(icons[idx]); }
                 }
             }
             setTimeout(callback, correctAnswer * 200 + 600);
         }
 
-        // --- مدیریت مودال‌ها ---
         function showFeedback(isSuccess, showAnswer = false) {
             const modal = document.getElementById('feedback-modal');
             const card = document.getElementById('feedback-card-inner');
             modal.classList.add('active');
-            
             if(isSuccess) {
-                card.innerHTML = `
-                    <div class="text-6xl mb-2 animate-bounce">🤩</div>
-                    <h2 class="text-2xl font-black text-green-500 mb-1">آفرین!</h2>
-                    <button onclick="generateLevel()" class="w-full bg-green-500 text-white text-lg font-bold py-2 rounded-xl shadow-lg mt-4 hover:bg-green-600">بعدی ⬅</button>
-                `;
+                card.innerHTML = `<div class="text-6xl mb-2 animate-bounce">🤩</div><h2 class="text-2xl font-black text-green-500 mb-1">آفرین!</h2><button onclick="generateLevel()" class="w-full bg-green-500 text-white text-lg font-bold py-2 rounded-xl shadow-lg mt-4 hover:bg-green-600">بعدی ⬅</button>`;
                 card.style.borderColor = "#86efac";
             } else {
                if (showAnswer) {
-                   card.innerHTML = `
-                       <div class="text-6xl mb-2">💡</div>
-                       <h2 class="text-2xl font-black text-sky-500 mb-1">اشکال نداره</h2>
-                       <p class="text-gray-500 font-bold">جواب: <span class="text-xl text-sky-600">${correctAnswer.toLocaleString('fa-IR')}</span></p>
-                       <button onclick="generateLevel()" class="w-full bg-sky-500 text-white text-lg font-bold py-2 rounded-xl shadow-lg mt-4 hover:bg-sky-600">یاد گرفتم!</button>
-                   `;
+                   card.innerHTML = `<div class="text-6xl mb-2">💡</div><h2 class="text-2xl font-black text-sky-500 mb-1">اشکال نداره</h2><p class="text-gray-500 font-bold">جواب: <span class="text-xl text-sky-600">${correctAnswer.toLocaleString('fa-IR')}</span></p><button onclick="generateLevel()" class="w-full bg-sky-500 text-white text-lg font-bold py-2 rounded-xl shadow-lg mt-4 hover:bg-sky-600">یاد گرفتم!</button>`;
                    card.style.borderColor = "#38bdf8";
                } else {
-                   card.innerHTML = `
-                       <div class="text-6xl mb-2 animate-pulse">🤔</div>
-                       <h2 class="text-2xl font-black text-orange-500 mb-1">دقت کن!</h2>
-                       <button onclick="retryLevel()" class="w-full bg-orange-400 text-white text-lg font-bold py-2 rounded-xl shadow-lg mt-4 hover:bg-orange-500">تلاش دوباره</button>
-                   `;
+                   card.innerHTML = `<div class="text-6xl mb-2 animate-pulse">🤔</div><h2 class="text-2xl font-black text-orange-500 mb-1">دقت کن!</h2><button onclick="retryLevel()" class="w-full bg-orange-400 text-white text-lg font-bold py-2 rounded-xl shadow-lg mt-4 hover:bg-orange-500">تلاش دوباره</button>`;
                    card.style.borderColor = "#fdba74";
                }
            }
@@ -901,15 +839,12 @@
        function closeFeedback() { document.getElementById('feedback-modal').classList.remove('active'); }
        function retryLevel() { isLocked = false; closeFeedback(); }
 
-       // --- تایمر و پایان چالشی ---
        function startTimer() {
            timeLeft = 60;
            const timerEl = document.getElementById('timer-display');
            document.getElementById('time-left').innerText = timeLeft;
-           timerEl.classList.remove('hidden', 'time-low');
-           timerEl.style.backgroundColor = '#ef4444';
-           stickerNotificationQueue = []; // پاک کردن صف قبلی
-
+           timerEl.classList.remove('hidden', 'time-low'); timerEl.style.backgroundColor = '#ef4444';
+           stickerNotificationQueue = [];
            if(timerInterval) clearInterval(timerInterval);
            timerInterval = setInterval(() => {
                timeLeft--;
@@ -919,70 +854,33 @@
            }, 1000);
        }
        function stopTimer() { clearInterval(timerInterval); }
-       
        function endChallenge() {
-           stopTimer(); isLocked = true;
-           updateStats(currentMode, false, score); // ثبت نهایی رکورد
-           
+           stopTimer(); isLocked = true; updateStats(currentMode, false, score);
            const modal = document.getElementById('feedback-modal');
            const card = document.getElementById('feedback-card-inner');
-           modal.classList.add('active');
-           card.style.borderColor = "#60a5fa";
-           
-           // دکمه بازگشت حالا ابتدا استیکرها را چک می‌کند
-           card.innerHTML = `
-               <div class="text-6xl mb-2">🏁</div>
-               <h2 class="text-2xl font-black text-blue-500 mb-1">وقت تموم شد!</h2>
-               <p class="text-gray-500 font-bold mb-4">امتیاز: <span class="text-2xl text-blue-600">${score.toLocaleString('fa-IR')}</span></p>
-               <button onclick="finishChallengeSequence()" class="w-full bg-blue-500 text-white text-lg font-bold py-2 rounded-xl shadow-lg hover:bg-blue-600">ادامه ⬅</button>
-           `;
+           modal.classList.add('active'); card.style.borderColor = "#60a5fa";
+           card.innerHTML = `<div class="text-6xl mb-2">🏁</div><h2 class="text-2xl font-black text-blue-500 mb-1">وقت تموم شد!</h2><p class="text-gray-500 font-bold mb-4">امتیاز: <span class="text-2xl text-blue-600">${score.toLocaleString('fa-IR')}</span></p><button onclick="finishChallengeSequence()" class="w-full bg-blue-500 text-white text-lg font-bold py-2 rounded-xl shadow-lg hover:bg-blue-600">ادامه ⬅</button>`;
        }
-       
-       // تابع جدید برای مدیریت پایان چالش
-       function finishChallengeSequence() {
-           closeFeedback();
-           if (stickerNotificationQueue.length > 0) {
-               showNextSticker();
-           } else {
-               showHome();
-           }
-       }
+       function finishChallengeSequence() { closeFeedback(); if (stickerNotificationQueue.length > 0) showNextSticker(); else showHome(); }
 
-        // --- افکت کاغذ رنگی ---
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-
         function triggerConfetti() {
-            for (let i = 0; i < 60; i++) {
-                particles.push({
-                    x: window.innerWidth / 2, y: window.innerHeight / 2,
-                    vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 1) * 20,
-                    color: ['#FF6B6B', '#4ECDC4', '#FFE66D', '#FF9F43'][Math.floor(Math.random()*4)],
-                    size: Math.random() * 8 + 4, life: 100, gravity: 0.5
-                });
-            }
+            for (let i = 0; i < 60; i++) particles.push({ x: window.innerWidth/2, y: window.innerHeight/2, vx: (Math.random()-0.5)*20, vy: (Math.random()-1)*20, color: ['#FF6B6B', '#4ECDC4', '#FFE66D', '#FF9F43'][Math.floor(Math.random()*4)], size: Math.random()*8+4, life: 100, gravity: 0.5 });
             animateConfetti();
         }
         function animateConfetti() {
             if (particles.length === 0) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += p.gravity; p.life--;
-                ctx.fillStyle = p.color; ctx.beginPath(); ctx.rect(p.x, p.y, p.size, p.size); ctx.fill();
-            }
+            for (let i=0; i<particles.length; i++) { let p=particles[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=p.gravity; p.life--; ctx.fillStyle=p.color; ctx.beginPath(); ctx.rect(p.x, p.y, p.size, p.size); ctx.fill(); }
             particles = particles.filter(p => p.life > 0);
             requestAnimationFrame(animateConfetti);
         }
-
-        // --- شروع برنامه ---
-        document.addEventListener('DOMContentLoaded', () => {
-            loadUserData();
-        });
+        document.addEventListener('DOMContentLoaded', () => { loadUserData(); });
     </script>
 </body>
-
 </html>
